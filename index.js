@@ -29,7 +29,7 @@ AFRAME.registerSystem('data-binding', {
     this.sourceData = AFRAME.utils.extend(this.sourceData, x);
   },
   bindData: function (bindee) {
-    const bindName = bindee.data;
+    const bindName = bindee.data.source;
     if (!this.sourceData[bindName]) {
       this.sourceData[bindName] = [];
     }
@@ -41,15 +41,18 @@ AFRAME.registerSystem('data-binding', {
     return this.sourceData[bindName];
   },
   unbindData: function (bindee) {
-    let pos = this.bindings[bindee.data].indexOf(bindee);
+    let pos = this.bindings[bindee.data.source].indexOf(bindee);
     if (pos !== -1) {
-      this.bindings[bindee.data].splice(pos, 1);
+      this.bindings[bindee.data.source].splice(pos, 1);
     }
   }
 });
 
 AFRAME.registerComponent('data-binding', {
-  schema: { type: 'string' },
+  schema: {
+    source: {type: 'string'},
+    target: {type: 'string'}
+  },
   multiple: true,
   init: function () {
     this.boundData = null;
