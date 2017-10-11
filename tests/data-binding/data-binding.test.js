@@ -41,6 +41,9 @@ suite('data-binding component', function () {
     test.skip('unbinds data safely', function () {
 
     });
+    test.skip('on source change, removes old binding and adds new', function () {
+
+    });
   });
   suite('component-target binding', function () {
     test('data transferred to target component', function () {
@@ -50,6 +53,9 @@ suite('data-binding component', function () {
       this.system.updateData({test: ['a', 'b', 'c']});
       assert.sameMembers(this.el.getAttribute('dummy').dat, ['a', 'b', 'c'], 'fills up');
       assert.isTrue(targetUdateSpy.called);
+      this.system.updateData({test: [1]});
+      assert.sameMembers(this.el.getAttribute('dummy').dat, [1], 'changes');
+      assert.isTrue(targetUdateSpy.calledTwice, 'updates');
     });
   });
 });
