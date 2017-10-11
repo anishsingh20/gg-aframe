@@ -11,12 +11,8 @@ AFRAME.registerSystem('data-binding', {
     this.sourceData = {};
   },
   updateData: function (x) {
-    const oldData = this.sourceData;
-    if (!Object.keys(x).every(y => Array.isArray(x[y]))) {
-      throw new Error('All data-binding data values must be arrays');
-    }
     for (let binding in this.bindings) {
-      if (!AFRAME.utils.deepEqual(oldData[binding], x[binding])) {
+      if (x[binding] && !AFRAME.utils.deepEqual(this.sourceData[binding], x[binding])) {
         let srcDatum = this.sourceData[binding];
         // keeping the same array object that bound components point to
         srcDatum.splice(0, srcDatum.length, ...x[binding]);
