@@ -9,6 +9,11 @@ AFRAME.registerSystem('data-binding', {
   init: function () {
     this.bindings = {};
     this.sourceData = {};
+    this.updateDataListenerBound = this.updateDataListener.bind(this);
+    this.el.addEventListener('update-data', this.updateDataListenerBound);
+  },
+  remove: function () {
+    this.el.removeEventListener('update-data', this.updateDataListenerBound);
   },
   updateData: function (x) {
     for (let binding in this.bindings) {
@@ -24,6 +29,9 @@ AFRAME.registerSystem('data-binding', {
     }
     // any keys that aren't bound can just be reassigned
     this.sourceData = AFRAME.utils.extend(this.sourceData, x);
+  },
+  updateDataListener: function (evt) {
+    this.updateData(evt.detail);
   },
   bindData: function (bindee) {
     const bindName = bindee.data.source;
