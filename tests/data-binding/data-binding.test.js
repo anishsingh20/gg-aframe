@@ -12,7 +12,6 @@ suite('data-binding component', function () {
   setup(function (done) {
     var el = this.el = entityFactory();
     this.scene = el.sceneEl;
-    this.scene.setAttribute('data-binding');
     this.el.setAttribute('data-binding', 'source: test');
     this.el.setAttribute('dummy', '');
     this.scene.addEventListener('loaded', () => {
@@ -25,6 +24,17 @@ suite('data-binding component', function () {
     test('component attaches and removes without errors', function (done) {
       this.el.removeAttribute('data-binding');
       process.nextTick(done);
+    });
+  });
+  suite('data updates to system', function () {
+    test('system data updates on event', function () {
+      this.el.emit('update-data', {test2: [4, 5, 6], test3: ['a', 'b', 'c']});
+      assert.sameMembers(this.system.sourceData.test2, [4, 5, 6]);
+      assert.sameMembers(this.system.sourceData.test3, ['a', 'b', 'c']);
+      this.el.emit('update-data', {test2: [3, 2, 1], test4: ['d']});
+      assert.sameMembers(this.system.sourceData.test2, [3, 2, 1]);
+      assert.sameMembers(this.system.sourceData.test3, ['a', 'b', 'c']);
+      assert.sameMembers(this.system.sourceData.test4, ['d']);
     });
   });
   suite('system-component binding', function () {
