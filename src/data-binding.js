@@ -60,6 +60,9 @@ AFRAME.registerComponent('data-binding', {
     this.boundData = null
   },
   update: function (oldData) {
+    if (this.data.source.length === 0) {
+      this.data.source = this.id // take from DOM multiple id
+    }
     if (oldData.source !== this.data.source) {
       this.system.unbindData(this)
       this.boundData = this.system.bindData(this)
