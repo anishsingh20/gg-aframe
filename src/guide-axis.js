@@ -24,25 +24,6 @@ AFRAME.registerComponent('guide-axis', {
     var rotText = {x: 0, y: 0, z: 0}
     var compDat = this.data
 
-    function makeAxis (el, pos, rot, compDat) {
-      el.axis = compDat.axis
-      el.setAttribute('geometry', {
-        primitive: 'plane',
-        width: compDat.size,
-        height: compDat.size
-      })
-      el.setAttribute('hoverable', '')
-      el.setAttribute('material', {
-        src: compDat.texture,
-        visible: false
-      })
-      el.setAttribute('position', pos)
-      el.setAttribute('rotation', rot)
-      el.setAttribute('static-body', '')
-      el.setAttribute('collision-filter', {group: 'plotaxis'})
-      return el
-    }
-
     switch (compDat.axis) {
       case 'x':
         pos.y = -1 * compDat.size / 2
@@ -79,15 +60,11 @@ AFRAME.registerComponent('guide-axis', {
         rotText.z = -45
     }
     this.axis = document.createElement('a-entity')
-    this.axis.addEventListener('loaded', evt => {
-      makeAxis(this.axis, pos, rot, compDat)
-    }, { once: true })
     this.el.appendChild(this.axis)
+    makeAxis(this.axis, pos, rot, compDat)
     this.mirror = document.createElement('a-entity')
-    this.mirror.addEventListener('loaded', evt => {
-      makeAxis(this.mirror, pos2, rot2, compDat)
-    }, { once: true })
     this.el.appendChild(this.mirror)
+    makeAxis(this.mirror, pos2, rot2, compDat)
     this.markArea = document.createElement('a-entity')
     this.el.appendChild(this.markArea)
     this.markArea.setAttribute('position', posText)
@@ -109,6 +86,24 @@ AFRAME.registerComponent('guide-axis', {
       y: compDat.axis === 'y' ? 1 : -0.03,
       z: compDat.axis === 'z' ? 0.5 : -0.03
     })
+    function makeAxis (el, pos, rot, compDat) {
+      el.axis = compDat.axis
+      el.setAttribute('geometry', {
+        primitive: 'plane',
+        width: compDat.size,
+        height: compDat.size
+      })
+      el.setAttribute('hoverable', '')
+      el.setAttribute('material', {
+        src: compDat.texture,
+        visible: false
+      })
+      el.setAttribute('position', pos)
+      el.setAttribute('rotation', rot)
+      el.setAttribute('static-body', '')
+      el.setAttribute('collision-filter', {group: 'plotaxis'})
+      return el
+    }
   },
   update: function () {
     this.nextMark = 0

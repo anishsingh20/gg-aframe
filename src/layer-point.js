@@ -44,7 +44,7 @@ AFRAME.registerComponent('layer-point', {
     mark.setAttribute('animation', {
       startEvents: ['pointupdated'],
       property: 'position',
-      to: [this.data.x[i], this.data.y[i], this.data.z[i]].join(' ')
+      to: {x: this.data.x[i], y: this.data.y[i], z: this.data.z[i]}
     })
     if (mark.hasLoaded) {
       mark.emit('pointupdated', undefined, false)
