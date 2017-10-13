@@ -51,6 +51,7 @@ AFRAME.registerComponent('guide-axis', {
         pos2.y = -1 * pos.y
         rot2.x = -1 * rot.x
         rot2.z = rot.z
+        posText.x = compDat.size / -2
         posText.y = pos.y - 0.015
         posText.z = compDat.size / 2 + 0.015
         rotText.x = -45
@@ -61,6 +62,7 @@ AFRAME.registerComponent('guide-axis', {
         rot2.x = 180
         rot2.z = 180
         posText.x = compDat.size / 2 + 0.015
+        posText.y = compDat.size / -2
         posText.z = compDat.size / 2 + 0.015
         rotText.y = -45
         break
@@ -73,6 +75,7 @@ AFRAME.registerComponent('guide-axis', {
         rot2.z = -1 * rot.z
         posText.y = -1 * compDat.size / 2 - 0.015
         posText.x = -1 * compDat.size / 2 - 0.015
+        posText.z = compDat.size / -2
         rotText.z = -45
     }
     this.axis = document.createElement('a-entity')

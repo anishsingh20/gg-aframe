@@ -12,8 +12,8 @@ AFRAME.registerComponent('layer-point', {
     this.nextMark = 0
     this.numMarks = 0
     this.markEls = []
-
-    // this.updateNextMarkBound = this.updateNextMark.bind(this)
+    // offset to make default scale 0 - 1
+    this.el.setAttribute('position', {x: -0.5, y: -0.5, z: -0.5})
   },
   update: function () {
     this.nextMark = 0
