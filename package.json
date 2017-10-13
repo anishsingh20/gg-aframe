@@ -6,8 +6,8 @@
   "scripts": {
     "build": "browserify examples/main.js -o examples/build.js",
     "dev": "budo examples/main.js:build.js --dir examples --port 8000 --live --open",
-    "dist": "webpack index.js dist/.js && webpack -p index.js dist/.min.js",
-    "lint": "semistandard -v | snazzy",
+    "dist": "webpack index.js dist/aframe-data-binding-component.js && webpack -p index.js dist/aframe-data-binding-component.min.js",
+    "lint": "standard",
     "prepublish": "npm run dist",
     "preghpages": "npm run build && shx rm -rf gh-pages && shx mkdir gh-pages && shx cp -r examples/* gh-pages",
     "ghpages": "npm run preghpages && ghpages -p gh-pages",
@@ -55,6 +55,7 @@
     "sinon": "^2.4.1",
     "sinon-chai": "^2.14.0",
     "snazzy": "^4.0.0",
+    "standard": "^10.0.3",
     "webpack": "^1.13.0"
   },
   "semistandard": {
