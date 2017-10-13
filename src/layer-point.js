@@ -36,16 +36,25 @@ AFRAME.registerComponent('layer-point', {
       mark = document.createElement('a-entity')
       this.markEls.push(mark)
       this.el.appendChild(mark)
-      return
+    } else {
+      mark = this.markEls[i]
     }
-    mark = this.markEls[i]
-    if (!mark.hasLoaded) { return }
     mark.setAttribute('geometry', this.makeGeometry(i))
     mark.setAttribute('material', this.makeMaterial(i))
     mark.setAttribute('animation', {
+      startEvents: ['pointupdated'],
       property: 'position',
       to: [this.data.x[i], this.data.y[i], this.data.z[i]].join(' ')
     })
+    if (mark.hasLoaded) {
+      mark.emit('pointupdated', undefined, false)
+    } else {
+      mark.addEventListener(
+        'loaded',
+        () => mark.emit('pointupdated', undefined, false),
+        {once: true}
+      )
+    }
     this.nextMark++
   },
   makeGeometry: function (i) {
