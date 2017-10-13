@@ -7,10 +7,14 @@
       AFRAME.registerComponent('fake-data', {
         play: function () {
           this.el.emit('update-data', {
-            x: [0.4, 0.3, 0.2, 0.1],
-            y: [0.1, 0.2, 0.3, 0.4],
-            z: [-0.5, -0.5, 0.5, 0.5],
-            size: [0.05, 0.01, 0.03, 0.02]
+            x: [-0.5, -0.25, 0.25, 0.5],
+            y: [0, 0, 0, 0],
+            z: [0.5, 0.5, 0.5, 0.5],
+            size: [0.01, 0.01, 0.01, 0.01],
+            breaks: [-0.5, -0.25, 0, 0.25, 0.5],
+            labels: [-0.5, -0.25, 0, 0.25, 0.5],
+            shape: ["box", "sphere", "tetrahedron", "tetrahedron"],
+            color: ["red", "#0F0", "#0FF", "black"]
           })
         }
       })
@@ -19,12 +23,28 @@
   <body>
     <a-scene data-binding fake-data>
       <a-assets></a-assets>
+      <a-entity id="plot" geometry material="color: red; transparent: true; opacity: 0.5"
+                position="0 1.6 -1.25" rotation="0 35 0">
       <a-entity data-binding__x="source: x; target: layer-point.x"
-      data-binding__y="source: y; target: layer-point.y"
-      data-binding__z="source: z; target: layer-point.z"
-      data-binding__size="source: size; target: layer-point.size"
-      layer-point="x: 0.1, 0.2, 0.3, 0.4; y: 0.1, 0.2, 0.3, 0.4; z: 0.1, 0.2, 0.3, 0.4; shape: box, sphere, tetrahedron, tetrahedron; color: red, #0F0, #0FF, black"
-                position="0 1.6 -1"></a-entity>
+        data-binding__y="source: y; target: layer-point.y"
+        data-binding__z="source: z; target: layer-point.z"
+        data-binding__size="source: size; target: layer-point.size"
+        data-binding__shape="source: shape; target: layer-point.shape"
+        data-binding__color="source: color; target: layer-point.color">
+      </a-entity>
+      <a-entity data-binding__breaks="source: breaks; target: guide-axis.breaks"
+        data-binding__labels="source: breaks; target: guide-axis.labels"
+        guide-axis="axis: x">
+      </a-entity>
+      <a-entity data-binding__breaks="source: breaks; target: guide-axis.breaks"
+        data-binding__labels="source: breaks; target: guide-axis.labels"
+        guide-axis="axis: y">
+      </a-entity>
+      <a-entity data-binding__breaks="source: breaks; target: guide-axis.breaks"
+        data-binding__labels="source: breaks; target: guide-axis.labels"
+        guide-axis="axis: z">
+      </a-entity>
+    </a-entity>
     </a-scene>
 
     <!-- GitHub Corner. -->

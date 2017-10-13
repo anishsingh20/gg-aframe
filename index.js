@@ -6,3 +6,4 @@ if (typeof AFRAME === 'undefined') {
 
 require('./src/data-binding.js')
 require('./src/layer-point.js')
+require('./src/guide-axis.js')
