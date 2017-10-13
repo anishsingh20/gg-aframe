@@ -2,10 +2,10 @@
 AFRAME.registerComponent('guide-axis', {
   schema: {
     axis: {default: 'x', oneOf: ['x', 'y', 'z']},
-    title: {type: 'string', default: ''},
+    title: {default: []},
     breaks: {default: []},
     labels: {default: []},
-    fontScale: {default: 0.3},
+    fontScale: {default: 0.75},
     fontColor: {default: '#000'},
     size: {default: 1}
   },
@@ -92,6 +92,23 @@ AFRAME.registerComponent('guide-axis', {
     this.el.appendChild(this.markArea)
     this.markArea.setAttribute('position', posText)
     this.markArea.setAttribute('rotation', rotText)
+    this.titleEl = document.createElement('a-entity')
+    this.markArea.appendChild(this.titleEl)
+    this.titleEl.setAttribute('text', {
+      color: this.data.fontColor,
+      align: compDat.axis === 'y' ? 'left' : 'center',
+      anchor: compDat.axis === 'y' ? 'left' : 'center'
+    })
+    this.titleEl.setAttribute('rotation', {
+      x: 0,
+      y: compDat.axis === 'z' ? -90 : 0,
+      z: 0
+    })
+    this.titleEl.setAttribute('position', {
+      x: compDat.axis === 'x' ? 0.5 : 0,
+      y: compDat.axis === 'y' ? 1 : -0.03,
+      z: compDat.axis === 'z' ? 0.5 : -0.03
+    })
   },
   update: function () {
     this.nextMark = 0
@@ -103,6 +120,9 @@ AFRAME.registerComponent('guide-axis', {
         this.data.breaks[i] = parseFloat(this.data.breaks[i])
       }
     }
+    this.titleEl.setAttribute('text', {
+      value: this.data.title[0] || '(unmapped)'
+    })
   },
   tick: function () {
     let mark
@@ -134,7 +154,8 @@ AFRAME.registerComponent('guide-axis', {
     mark.setAttribute('text', {
       value: label,
       color: this.data.fontColor,
-      align: 'center'
+      align: this.data.axis === 'y' ? 'left' : 'center',
+      anchor: this.data.axis === 'y' ? 'left' : 'center'
     })
     this.nextMark++
   } // ,
