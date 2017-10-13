@@ -1,2 +1,2 @@
-window.debug = true;
-require('aframe');
+window.debug = true
+require('aframe')

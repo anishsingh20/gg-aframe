@@ -58,7 +58,7 @@
     "standard": "^10.0.3",
     "webpack": "^1.13.0"
   },
-  "semistandard": {
+  "standard": {
     "ignore": [
       "examples/build.js",
       "dist/**"

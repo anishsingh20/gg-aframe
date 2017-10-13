@@ -2,7 +2,7 @@
 var karmaConf = {
   basePath: '../',
   browserify: {
-    debug: true //,
+    debug: true // ,
     // transform: [
     //   ['babelify', {presets: ['es2015']}]
     // ]
@@ -39,9 +39,9 @@ var karmaConf = {
     'tests/**/*.js': ['browserify']
   },
   reporters: ['mocha']
-};
+}
 
 // Apply configuration
 module.exports = function (config) {
-  config.set(karmaConf);
-};
+  config.set(karmaConf)
+}
