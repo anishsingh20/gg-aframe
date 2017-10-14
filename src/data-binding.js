@@ -12,10 +12,13 @@ AFRAME.registerSystem('data-binding', {
   },
   updateData: function (x) {
     for (let binding in this.bindings) {
-      if (x[binding] && !AFRAME.utils.deepEqual(this.sourceData[binding], x[binding])) {
+      if (x[binding]) {
         let srcDatum = this.sourceData[binding]
-        // keeping the same array object that bound components point to
-        srcDatum.splice(0, srcDatum.length, ...x[binding])
+        // skip copy and just publish update if same objects
+        if (srcDatum !== x[binding]) {
+          // keeping the same array object that bound components point to
+          srcDatum.splice(0, srcDatum.length, ...x[binding])
+        }
         this.bindings[binding].forEach(dataComp => {
           dataComp.publishUpdate()
         })
@@ -30,6 +33,7 @@ AFRAME.registerSystem('data-binding', {
   },
   bindData: function (bindee) {
     const bindName = bindee.data.source
+    if (bindName === '') { return undefined }
     if (!this.sourceData[bindName]) {
       this.sourceData[bindName] = []
     }
