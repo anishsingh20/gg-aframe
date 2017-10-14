@@ -1,5 +1,5 @@
 /* global AFRAME */
-const helpers = require('plotutils')
+const helpers = require('./plotutils')
 
 AFRAME.registerComponent('layer-point', {
   schema: {
