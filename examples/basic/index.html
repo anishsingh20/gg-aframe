@@ -19,10 +19,17 @@
           breaks: [0, 0.25, 0.5, 0.75, 1],
           labels: ['zero', '1/4', '1/2', '3/4', 'one'],
           shape: ['sphere', 'tetrahedron', 'octahedron', 'dodecahedron', 'box', 'torus', 'torusKnot', 'cone', 'cylinder'],
-          color: ['red', '#0F0', '#0FF', 'black'],
+          color: ['red', '#0F0', '#0FF', 'black', 'red', '#0F0', '#0FF', 'black', '#888'],
           xtitle: ['X Axis Title Test Text'],
           ytitle: ['Y Axis Title Test Text'],
-          ztitle: ['Z Axis Title Test Text']
+          ztitle: ['Z Axis Title Test Text'],
+          colorbreaks: ['red', '#0F0', '#0FF', 'black', 'red', '#0F0', '#0FF', 'black'],
+          sizebreaks: [0.01, 0.03, 0.05, 0.07],
+          sizelabels: ['tiny', 'small', 'medium', 'large'],
+          shapebreaks: ['sphere', 'tetrahedron', 'octahedron', 'dodecahedron'],
+          colortitle: ['Color Legend Title'],
+          shapetitle: ['Shape title'],
+          sizetitle: ['Size title']
         })
       }
     </script>
@@ -31,7 +38,7 @@
     <a-scene>
       <a-assets></a-assets>
       <!-- plot container location and appearance -->
-      <a-entity id="plot" geometry material="color: red; transparent: true; opacity: 0.5"
+      <a-entity plot geometry material="color: red; transparent: true; opacity: 0.5"
                 position="0 1.6 -1.25" rotation="0 35 0">
         <!-- when the data-binding instance id matches the data store name, source is optional -->
         <a-entity layer-point
@@ -53,6 +60,16 @@
           data-binding__breaks="target: guide-axis.breaks"
           data-binding__labels="target: guide-axis.labels"
           data-binding__ztitle="target: guide-axis.title"></a-entity>
+        <a-entity guide-legend="aesthetic: color"
+          data-binding__colortitle="target: guide-legend.title"
+          data-binding__colorbreaks="target: guide-legend.breaks"></a-entity>
+        <a-entity guide-legend="aesthetic: shape"
+          data-binding__shapetitle="target: guide-legend.title"
+          data-binding__shapebreaks="target: guide-legend.breaks"></a-entity>
+        <a-entity guide-legend="aesthetic: size"
+          data-binding__sizetitle="target: guide-legend.title"
+          data-binding__sizelabels="target: guide-legend.labels"
+          data-binding__sizebreaks="target: guide-legend.breaks"></a-entity>
       </a-entity>
     </a-scene>
 
