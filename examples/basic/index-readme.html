@@ -1,0 +1,51 @@
+<head>
+  <title>My A-Frame Scene</title>
+  <script src="https://aframe.io/releases/0.7.0/aframe.min.js"></script>
+  <script src="../build.js"></script>
+  <script>
+    window.onload = () => {
+      document.querySelector('a-scene').emit('update-data', {
+        x: [0.05, 0.25, 0.5, 0.75, 0.95],
+        y: [0.05, 0.25, 0.5, 0.75, 0.95],
+        z: [0.05, 0.25, 0.5, 0.75, 0.95],
+        size: [0.03],
+        breaks: [0, 0.25, 0.5, 0.75, 1],
+        labels: ['zero', '1/4', '1/2', '3/4', 'one'],
+        shape: ['sphere', 'tetrahedron', 'octahedron', 'dodecahedron', 'box'],
+        color: ['red', '#0F0', '#0FF', 'black'],
+        xtitle: ['X Axis'],
+        ytitle: ['Y Axis'],
+        ztitle: ['Z Axis']
+      })
+    }
+  </script>
+</head>
+<body>
+  <a-scene>
+    <a-assets></a-assets>
+    <!-- plot container location and appearance -->
+    <a-entity id="plot" geometry material="color: red; transparent: true; opacity: 0.5"
+              position="0 1.6 -1.25" rotation="0 35 0">
+      <!-- when the data-binding instance id matches the data store name, source is optional -->
+      <a-entity layer-point
+        data-binding__x="target: layer-point.x"
+        data-binding__y="target: layer-point.y"
+        data-binding__z="target: layer-point.z"
+        data-binding__size="target: layer-point.size"
+        data-binding__shape="target: layer-point.shape"
+        data-binding__color="target: layer-point.color"></a-entity>
+      <a-entity guide-axis="axis: x"
+        data-binding__breaks="target: guide-axis.breaks"
+        data-binding__labels="target: guide-axis.labels"
+        data-binding__xtitle="target: guide-axis.title"></a-entity>
+      <a-entity guide-axis="axis: y"
+        data-binding__breaks="target: guide-axis.breaks"
+        data-binding__labels="target: guide-axis.labels"
+        data-binding__ytitle="target: guide-axis.title"></a-entity>
+      <a-entity guide-axis="axis: z"
+        data-binding__breaks="target: guide-axis.breaks"
+        data-binding__labels="target: guide-axis.labels"
+        data-binding__ztitle="target: guide-axis.title"></a-entity>
+    </a-entity>
+  </a-scene>
+</body>
