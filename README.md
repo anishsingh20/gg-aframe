@@ -3,6 +3,10 @@
 A Grammar of Graphics for Virtual Reality Data Visualization using
 [A-Frame](https://aframe.io).
 
+![Simple Example Plot](./readme_files/example.png)
+
+[View the examples page](https://wmurphyrd.github.io/gg-aframe/examples/)
+
 ## Data Binding
 
 The `data-binding` component and system help get data from any source into
