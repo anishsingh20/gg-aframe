@@ -7,6 +7,7 @@ AFRAME.registerComponent('theme', {
     fontScale: {default: 0.75},
     fontColor: {default: '#000'},
     highlightColor: {default: '#FFF'},
+    highlightTexture: {default: ''},
     guideWidth: {default: 0.3},
     guideHeight: {default: 0.3},
     guideMargin: {default: 0.01}

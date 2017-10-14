@@ -16,8 +16,8 @@
           y: y,
           z: z,
           size: [0.03],
-          breaks: [0, 0.25, 0.5, 0.75, 1],
-          labels: ['zero', '1/4', '1/2', '3/4', 'one'],
+          breaks: [0.25, 0.5, 0.75],
+          labels: ['1/4', 'half', '3/4'],
           shape: ['sphere', 'tetrahedron', 'octahedron', 'dodecahedron', 'box', 'torus', 'torusKnot', 'cone', 'cylinder'],
           color: ['red', '#0F0', '#0FF', 'black', 'red', '#0F0', '#0FF', 'black', '#888'],
           xtitle: ['X Axis Title Test Text'],
@@ -48,7 +48,7 @@
           data-binding__size="target: layer-point.size"
           data-binding__shape="target: layer-point.shape"
           data-binding__color="target: layer-point.color"></a-entity>
-        <a-entity guide-axis="axis: x"
+        <a-entity guide-axis="axis: x" theme="fontColor: #777"
           data-binding__breaks="target: guide-axis.breaks"
           data-binding__labels="target: guide-axis.labels"
           data-binding__xtitle="target: guide-axis.title"></a-entity>

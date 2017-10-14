@@ -4,11 +4,9 @@ AFRAME.registerComponent('guide-axis', {
     axis: {default: 'x', oneOf: ['x', 'y', 'z']},
     title: {default: []},
     breaks: {default: []},
-    labels: {default: []},
-    fontScale: {default: 0.75},
-    fontColor: {default: '#000'},
-    size: {default: 1}
+    labels: {default: []}
   },
+  dependencies: ['theme'],
   init: function () {
     this.nextMark = 0
     this.numMarks = 0
@@ -16,47 +14,48 @@ AFRAME.registerComponent('guide-axis', {
     this.markScale = {}
     this.el.axis = this.data.axis
     // create axis drop-targets for mapping UI
-    var pos = {x: 0, y: 0, z: 0}
-    var pos2 = {x: 0, y: 0, z: 0}
-    var rot = {x: 0, y: 0, z: 0}
-    var rot2 = {x: 0, y: 0, z: 0}
-    var posText = {x: 0, y: 0, z: 0}
-    var rotText = {x: 0, y: 0, z: 0}
-    var compDat = this.data
+    const pos = {x: 0, y: 0, z: 0}
+    const pos2 = {x: 0, y: 0, z: 0}
+    const rot = {x: 0, y: 0, z: 0}
+    const rot2 = {x: 0, y: 0, z: 0}
+    const posText = {x: 0, y: 0, z: 0}
+    const rotText = {x: 0, y: 0, z: 0}
+    const compDat = this.data
+    const theme = this.el.components.theme.getTheme()
 
     switch (compDat.axis) {
       case 'x':
-        pos.y = -1 * compDat.size / 2
+        pos.y = -0.5
         rot.x = -90
         rot.z = -90
         pos2.y = -1 * pos.y
         rot2.x = -1 * rot.x
         rot2.z = rot.z
-        posText.x = compDat.size / -2
+        posText.x = -0.5
         posText.y = pos.y - 0.015
-        posText.z = compDat.size / 2 + 0.015
+        posText.z = 0.515
         rotText.x = -45
         break
       case 'y':
-        pos.z = -1 * compDat.size / 2
+        pos.z = -0.5
         pos2.z = -1 * pos.z
         rot2.x = 180
         rot2.z = 180
-        posText.x = compDat.size / 2 + 0.015
-        posText.y = compDat.size / -2
-        posText.z = compDat.size / 2 + 0.015
+        posText.x = 0.515
+        posText.y = -0.5
+        posText.z = 0.515
         rotText.y = -45
         break
       case 'z':
-        pos.x = -1 * compDat.size / 2
+        pos.x = -0.5
         rot.y = 90
         rot.z = 90
         pos2.x = -1 * pos.x
         rot2.y = -1 * rot.y
         rot2.z = -1 * rot.z
-        posText.y = -1 * compDat.size / 2 - 0.015
-        posText.x = -1 * compDat.size / 2 - 0.015
-        posText.z = compDat.size / -2
+        posText.y = -0.515
+        posText.x = -0.515
+        posText.z = -0.5
         rotText.z = -45
     }
     this.axis = document.createElement('a-entity')
@@ -72,7 +71,7 @@ AFRAME.registerComponent('guide-axis', {
     this.titleEl = document.createElement('a-entity')
     this.markArea.appendChild(this.titleEl)
     this.titleEl.setAttribute('text', {
-      color: this.data.fontColor,
+      color: theme.fontColor,
       align: compDat.axis === 'y' ? 'left' : 'center',
       anchor: compDat.axis === 'y' ? 'left' : 'center'
     })
@@ -87,15 +86,15 @@ AFRAME.registerComponent('guide-axis', {
       z: compDat.axis === 'z' ? 0.5 : -0.03
     })
     function makeAxis (el, pos, rot, compDat) {
-      el.axis = compDat.axis
       el.setAttribute('geometry', {
         primitive: 'plane',
-        width: compDat.size,
-        height: compDat.size
+        width: 1,
+        height: 1
       })
       el.setAttribute('hoverable', '')
       el.setAttribute('material', {
-        src: compDat.texture,
+        src: theme.highlightTexture,
+        color: theme.highlightColor,
         visible: false
       })
       el.setAttribute('position', pos)
@@ -108,7 +107,8 @@ AFRAME.registerComponent('guide-axis', {
   update: function () {
     this.nextMark = 0
     this.numMarks = this.data.breaks.length
-    this.markScale.x = this.markScale.y = this.markScale.z = this.data.fontScale
+    this.theme = this.el.components.theme.getTheme()
+    this.markScale.x = this.markScale.y = this.markScale.z = this.theme.fontScale
     // convert data specified in DOM attribute
     if (typeof this.data.breaks[0] !== 'number') {
       for (let i in this.data.breaks) {
@@ -148,13 +148,10 @@ AFRAME.registerComponent('guide-axis', {
     mark.setAttribute('scale', this.markScale)
     mark.setAttribute('text', {
       value: label,
-      color: this.data.fontColor,
+      color: this.theme.fontColor,
       align: this.data.axis === 'y' ? 'left' : 'center',
       anchor: this.data.axis === 'y' ? 'left' : 'center'
     })
     this.nextMark++
-  } // ,
-  // offset: function (nchar) {
-  //   return -0.05 * nchar * this.data.fontScale
-  // }
+  }
 })
