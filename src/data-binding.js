@@ -58,6 +58,7 @@ AFRAME.registerComponent('data-binding', {
   multiple: true,
   init: function () {
     this.boundData = null
+    this.updateDetails = { boundData: this.boundData }
   },
   update: function (oldData) {
     if (this.data.source.length === 0) {
@@ -90,7 +91,7 @@ AFRAME.registerComponent('data-binding', {
           this.el.setAttribute(selectors[0], selectors[1], this.boundData)
         }
       }
-      this.el.emit('data-changed')
+      this.el.emit('data-changed', this.updateDetails)
     }
   })()
 })
