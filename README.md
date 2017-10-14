@@ -11,9 +11,12 @@ thought of as a simplified, specialized version of the
 [A-Frame state component](https://github.com/ngokevin/kframe/tree/master/components/state/)
 that only handles array data. This allows you to have one central
 data repository for the scene with a list of arrays that can be mapped and
-synced to any A-Frame component's array properties. They can be reused to map
-to multiple components without any duplication of data, and they can be updated
-from internal or external sources and will cascade changes to mapped components.
+synced to any A-Frame component's array properties. The central repository
+simplifies the process of bringing data in from other libraries and sources,
+as you only need to update in one place to affect the entire scene.
+Arrays in the store can be reused to map
+to multiple entities and components without any duplication of data,
+and updates and will cascade changes to mapped components.
 
 ### data-binding system
 
@@ -46,7 +49,7 @@ each `data-binding` component instance.
 | Property | Description | Default Value |
 | -------- | ----------- | ------------- |
 | source | Name of an array in the data store | `''`* |
-| target | Name of schema property, as `'component.property'`, on a sibling component to bind (optional) | '' |
+| target | Name of schema property, as `'component.property'`, on a sibling component to bind (optional) | `''` |
 
 \* If source is omitted, will attempt to use the component multiple id as the source name.
 
@@ -134,7 +137,7 @@ Add a legend for a non-positional aesthetic
 
 Scales map from raw data into aesthetic values. No scales are
 available yet in `gg-aframe`. Use your favorite visualization library to
-scale the data before passing it into the `data-binding` system. See my
+scale the data before passing it in. See my
 [adit](https://github.com/wmurphyrd/adit) application for an example
 of doing this using `ggplot2` in R.
 
