@@ -127,7 +127,7 @@ AFRAME.registerComponent('guide-axis', {
     if (i >= dataLen) { return }
     // remove any extra entities first
     if (this.markEls.length > dataLen) {
-      this.el.removeChild(this.markEls[dataLen])
+      this.markArea.removeChild(this.markEls[dataLen])
       this.markEls.splice(dataLen, 1)
       return
     }
