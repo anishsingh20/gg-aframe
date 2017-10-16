@@ -17,7 +17,8 @@ AFRAME.registerSystem('data-binding', {
         // skip copy and just publish update if same objects
         if (srcDatum !== x[binding]) {
           // keeping the same array object that bound components point to
-          srcDatum.splice(0, srcDatum.length, ...x[binding])
+          srcDatum.length = 0
+          srcDatum.push(...x[binding])
         }
         this.bindings[binding].forEach(dataComp => {
           dataComp.publishUpdate()

@@ -1,20 +1,24 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-require('../index.js')
+'use strict';
+
+require('../index.js');
 
 },{"../index.js":2}],2:[function(require,module,exports){
+'use strict';
 /* global AFRAME */
-'Copyright 2017 William Murphy This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.'
+'Copyright 2017 William Murphy This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.';
+
 if (typeof AFRAME === 'undefined') {
-  throw new Error('Component attempted to register before AFRAME was available.')
+  throw new Error('Component attempted to register before AFRAME was available.');
 }
 
-require('./src/plot.js')
-require('./src/theme.js')
-require('./src/data-binding.js')
-require('./src/layer-point.js')
-require('./src/guide-axis.js')
-require('./src/guide-legend.js')
-require('aframe-animation-component')
+require('./src/plot.js');
+require('./src/theme.js');
+require('./src/data-binding.js');
+require('./src/layer-point.js');
+require('./src/guide-axis.js');
+require('./src/guide-legend.js');
+require('aframe-animation-component');
 
 },{"./src/data-binding.js":5,"./src/guide-axis.js":6,"./src/guide-legend.js":7,"./src/layer-point.js":8,"./src/plot.js":9,"./src/theme.js":11,"aframe-animation-component":3}],3:[function(require,module,exports){
 /* global AFRAME */
@@ -895,533 +899,549 @@ function getPropertyType (el, property) {
 }));
 
 },{}],5:[function(require,module,exports){
+'use strict';
+
 /* global AFRAME */
 AFRAME.registerSystem('data-binding', {
   schema: {},
   init: function () {
-    this.bindings = {}
-    this.sourceData = {}
-    this.updateDataListenerBound = this.updateDataListener.bind(this)
-    this.el.addEventListener('update-data', this.updateDataListenerBound)
+    this.bindings = {};
+    this.sourceData = {};
+    this.updateDataListenerBound = this.updateDataListener.bind(this);
+    this.el.addEventListener('update-data', this.updateDataListenerBound);
   },
   remove: function () {
-    this.el.removeEventListener('update-data', this.updateDataListenerBound)
+    this.el.removeEventListener('update-data', this.updateDataListenerBound);
   },
   updateData: function (x) {
     for (let binding in this.bindings) {
       if (x[binding]) {
-        let srcDatum = this.sourceData[binding]
+        let srcDatum = this.sourceData[binding];
         // skip copy and just publish update if same objects
         if (srcDatum !== x[binding]) {
           // keeping the same array object that bound components point to
-          srcDatum.splice(0, srcDatum.length, ...x[binding])
+          srcDatum.length = 0;
+          srcDatum.push(...x[binding]);
         }
         this.bindings[binding].forEach(dataComp => {
-          dataComp.publishUpdate()
-        })
-        delete x[binding] // remove processed items
+          dataComp.publishUpdate();
+        });
+        delete x[binding]; // remove processed items
       }
     }
     // any keys that aren't bound can just be reassigned
-    this.sourceData = AFRAME.utils.extend(this.sourceData, x)
+    this.sourceData = AFRAME.utils.extend(this.sourceData, x);
   },
   updateDataListener: function (evt) {
-    this.updateData(evt.detail)
+    this.updateData(evt.detail);
   },
   bindData: function (bindee) {
-    const bindName = bindee.data.source
-    if (bindName === '') { return undefined }
+    const bindName = bindee.data.source;
+    if (bindName === '') {
+      return undefined;
+    }
     if (!this.sourceData[bindName]) {
-      this.sourceData[bindName] = []
+      this.sourceData[bindName] = [];
     }
     if (this.bindings[bindName]) {
-      this.bindings[bindName].push(bindee)
+      this.bindings[bindName].push(bindee);
     } else {
-      this.bindings[bindName] = [bindee]
+      this.bindings[bindName] = [bindee];
     }
-    return this.sourceData[bindName]
+    return this.sourceData[bindName];
   },
   unbindData: function (bindee) {
-    let binding = this.bindings[bindee.data.source]
-    if (!binding) { return }
-    let pos = binding.indexOf(bindee)
+    let binding = this.bindings[bindee.data.source];
+    if (!binding) {
+      return;
+    }
+    let pos = binding.indexOf(bindee);
     if (pos !== -1) {
-      this.bindings[bindee.data.source].splice(pos, 1)
+      this.bindings[bindee.data.source].splice(pos, 1);
     }
   }
-})
+});
 
 AFRAME.registerComponent('data-binding', {
   schema: {
-    source: {type: 'string'},
-    target: {type: 'string'}
+    source: { type: 'string' },
+    target: { type: 'string' }
   },
   multiple: true,
   init: function () {
-    this.boundData = null
-    this.updateDetails = { boundData: this.boundData }
+    this.boundData = null;
+    this.updateDetails = { boundData: this.boundData };
   },
   update: function (oldData) {
     if (this.data.source.length === 0) {
-      this.data.source = this.id // take from DOM multiple id
+      this.data.source = this.id; // take from DOM multiple id
     }
     if (oldData.source !== this.data.source) {
-      this.system.unbindData(this)
-      this.boundData = this.system.bindData(this)
+      this.system.unbindData(this);
+      this.boundData = this.system.bindData(this);
     }
   },
   remove: function () {
-    this.system.unbindData(this)
+    this.system.unbindData(this);
   },
-  publishUpdate: (function () {
-    const splitSelectors = {}
+  publishUpdate: function () {
+    const splitSelectors = {};
     return function () {
-      let selectors = splitSelectors[this.data.target]
+      let selectors = splitSelectors[this.data.target];
       // having a target binding is optional
       if (this.data.target.length) {
         if (!selectors) {
-          selectors = splitSelectors[this.data.target] = this.data.target.split('.')
+          selectors = splitSelectors[this.data.target] = this.data.target.split('.');
         }
         // setAttribute only needs to be called once to make the target,
         // bound data, and system source sata all equal the same object
-        const targetComp = this.el.components[selectors[0]]
+        const targetComp = this.el.components[selectors[0]];
         if (targetComp && targetComp.data[selectors[1]] === this.boundData) {
           // once set, just need to trigger update manually
-          targetComp.update(targetComp.data)
+          targetComp.update(targetComp.data);
         } else {
-          this.el.setAttribute(selectors[0], selectors[1], this.boundData)
+          this.el.setAttribute(selectors[0], selectors[1], this.boundData);
         }
       }
-      this.el.emit('data-changed', this.updateDetails)
-    }
-  })()
-})
+      this.el.emit('data-changed', this.updateDetails);
+    };
+  }()
+});
 
 },{}],6:[function(require,module,exports){
+'use strict';
+
 /* global AFRAME */
 AFRAME.registerComponent('guide-axis', {
   schema: {
-    axis: {default: 'x', oneOf: ['x', 'y', 'z']},
-    title: {default: []},
-    breaks: {default: []},
-    labels: {default: []}
+    axis: { default: 'x', oneOf: ['x', 'y', 'z'] },
+    title: { default: [] },
+    breaks: { default: [] },
+    labels: { default: [] }
   },
   dependencies: ['theme'],
   init: function () {
-    this.nextMark = 0
-    this.numMarks = 0
-    this.markEls = []
-    this.markScale = {}
-    this.el.axis = this.data.axis
+    this.nextMark = 0;
+    this.numMarks = 0;
+    this.markEls = [];
+    this.markScale = {};
+    this.el.axis = this.data.axis;
     // create axis drop-targets for mapping UI
-    const pos = {x: 0, y: 0, z: 0}
-    const pos2 = {x: 0, y: 0, z: 0}
-    const rot = {x: 0, y: 0, z: 0}
-    const rot2 = {x: 0, y: 0, z: 0}
-    const posText = {x: 0, y: 0, z: 0}
-    const rotText = {x: 0, y: 0, z: 0}
-    const compDat = this.data
-    const theme = this.el.components.theme.getTheme()
+    const pos = { x: 0, y: 0, z: 0 };
+    const pos2 = { x: 0, y: 0, z: 0 };
+    const rot = { x: 0, y: 0, z: 0 };
+    const rot2 = { x: 0, y: 0, z: 0 };
+    const posText = { x: 0, y: 0, z: 0 };
+    const rotText = { x: 0, y: 0, z: 0 };
+    const compDat = this.data;
+    const theme = this.el.components.theme.getTheme();
 
     switch (compDat.axis) {
       case 'x':
-        pos.y = -0.5
-        rot.x = -90
-        rot.z = -90
-        pos2.y = -1 * pos.y
-        rot2.x = -1 * rot.x
-        rot2.z = rot.z
-        posText.x = -0.5
-        posText.y = pos.y - 0.015
-        posText.z = 0.515
-        rotText.x = -45
-        break
+        pos.y = -0.5;
+        rot.x = -90;
+        rot.z = -90;
+        pos2.y = -1 * pos.y;
+        rot2.x = -1 * rot.x;
+        rot2.z = rot.z;
+        posText.x = -0.5;
+        posText.y = pos.y - 0.015;
+        posText.z = 0.515;
+        rotText.x = -45;
+        break;
       case 'y':
-        pos.z = -0.5
-        pos2.z = -1 * pos.z
-        rot2.x = 180
-        rot2.z = 180
-        posText.x = 0.515
-        posText.y = -0.5
-        posText.z = 0.515
-        rotText.y = -45
-        break
+        pos.z = -0.5;
+        pos2.z = -1 * pos.z;
+        rot2.x = 180;
+        rot2.z = 180;
+        posText.x = 0.515;
+        posText.y = -0.5;
+        posText.z = 0.515;
+        rotText.y = -45;
+        break;
       case 'z':
-        pos.x = -0.5
-        rot.y = 90
-        rot.z = 90
-        pos2.x = -1 * pos.x
-        rot2.y = -1 * rot.y
-        rot2.z = -1 * rot.z
-        posText.y = -0.515
-        posText.x = -0.515
-        posText.z = -0.5
-        rotText.z = -45
+        pos.x = -0.5;
+        rot.y = 90;
+        rot.z = 90;
+        pos2.x = -1 * pos.x;
+        rot2.y = -1 * rot.y;
+        rot2.z = -1 * rot.z;
+        posText.y = -0.515;
+        posText.x = -0.515;
+        posText.z = -0.5;
+        rotText.z = -45;
     }
-    this.axis = document.createElement('a-entity')
-    this.el.appendChild(this.axis)
-    makeAxis(this.axis, pos, rot, compDat)
-    this.mirror = document.createElement('a-entity')
-    this.el.appendChild(this.mirror)
-    makeAxis(this.mirror, pos2, rot2, compDat)
-    this.markArea = document.createElement('a-entity')
-    this.el.appendChild(this.markArea)
-    this.markArea.setAttribute('position', posText)
-    this.markArea.setAttribute('rotation', rotText)
-    this.titleEl = document.createElement('a-entity')
-    this.markArea.appendChild(this.titleEl)
+    this.axis = document.createElement('a-entity');
+    this.el.appendChild(this.axis);
+    makeAxis(this.axis, pos, rot, compDat);
+    this.mirror = document.createElement('a-entity');
+    this.el.appendChild(this.mirror);
+    makeAxis(this.mirror, pos2, rot2, compDat);
+    this.markArea = document.createElement('a-entity');
+    this.el.appendChild(this.markArea);
+    this.markArea.setAttribute('position', posText);
+    this.markArea.setAttribute('rotation', rotText);
+    this.titleEl = document.createElement('a-entity');
+    this.markArea.appendChild(this.titleEl);
     this.titleEl.setAttribute('text', {
       color: theme.fontColor,
       align: compDat.axis === 'y' ? 'left' : 'center',
       anchor: compDat.axis === 'y' ? 'left' : 'center'
-    })
+    });
     this.titleEl.setAttribute('rotation', {
       x: 0,
       y: compDat.axis === 'z' ? -90 : 0,
       z: 0
-    })
+    });
     this.titleEl.setAttribute('position', {
       x: compDat.axis === 'x' ? 0.5 : 0,
       y: compDat.axis === 'y' ? 1 : -0.03,
       z: compDat.axis === 'z' ? 0.5 : -0.03
-    })
-    function makeAxis (el, pos, rot, compDat) {
+    });
+    function makeAxis(el, pos, rot, compDat) {
       el.setAttribute('geometry', {
         primitive: 'plane',
         width: 1,
         height: 1
-      })
-      el.setAttribute('hoverable', '')
+      });
+      el.setAttribute('hoverable', '');
       el.setAttribute('material', {
         src: theme.highlightTexture,
         color: theme.highlightColor,
         visible: false
-      })
-      el.setAttribute('position', pos)
-      el.setAttribute('rotation', rot)
-      el.setAttribute('static-body', '')
-      el.setAttribute('collision-filter', {group: 'plotaxis'})
-      return el
+      });
+      el.setAttribute('position', pos);
+      el.setAttribute('rotation', rot);
+      el.setAttribute('static-body', '');
+      el.setAttribute('collision-filter', { group: 'plotaxis' });
+      return el;
     }
   },
   update: function () {
-    this.nextMark = 0
-    this.numMarks = this.data.breaks.length
-    this.theme = this.el.components.theme.getTheme()
-    this.markScale.x = this.markScale.y = this.markScale.z = this.theme.fontScale
+    this.nextMark = 0;
+    this.numMarks = this.data.breaks.length;
+    this.theme = this.el.components.theme.getTheme();
+    this.markScale.x = this.markScale.y = this.markScale.z = this.theme.fontScale;
     // convert data specified in DOM attribute
     if (typeof this.data.breaks[0] !== 'number') {
       for (let i in this.data.breaks) {
-        this.data.breaks[i] = parseFloat(this.data.breaks[i])
+        this.data.breaks[i] = parseFloat(this.data.breaks[i]);
       }
     }
     this.titleEl.setAttribute('text', {
       value: this.data.title[0] || '(unmapped)'
-    })
+    });
   },
   tick: function () {
-    let mark
-    const dataLen = this.numMarks
-    const i = this.nextMark
+    let mark;
+    const dataLen = this.numMarks;
+    const i = this.nextMark;
     // no more updates needed
-    if (i >= dataLen) { return }
+    if (i >= dataLen) {
+      return;
+    }
     // remove any extra entities first
     if (this.markEls.length > dataLen) {
-      this.markArea.removeChild(this.markEls[dataLen])
-      this.markEls.splice(dataLen, 1)
-      return
+      this.markArea.removeChild(this.markEls[dataLen]);
+      this.markEls.splice(dataLen, 1);
+      return;
     }
     if (this.nextMark >= this.markEls.length) {
-      mark = document.createElement('a-entity')
-      this.markEls.push(mark)
-      this.markArea.appendChild(mark)
+      mark = document.createElement('a-entity');
+      this.markEls.push(mark);
+      this.markArea.appendChild(mark);
     } else {
-      mark = this.markEls[i]
+      mark = this.markEls[i];
     }
-    const axis = this.data.axis
-    const label = this.data.labels[i]
-    const pos = {x: 0, y: 0, z: 0}
-    const rot = {x: 0, y: axis === 'z' ? -90 : 0, z: 0}
-    pos[axis] += this.data.breaks[i]
-    mark.setAttribute('position', pos)
-    mark.setAttribute('rotation', rot)
-    mark.setAttribute('scale', this.markScale)
+    const axis = this.data.axis;
+    const label = this.data.labels[i];
+    const pos = { x: 0, y: 0, z: 0 };
+    const rot = { x: 0, y: axis === 'z' ? -90 : 0, z: 0 };
+    pos[axis] += this.data.breaks[i];
+    mark.setAttribute('position', pos);
+    mark.setAttribute('rotation', rot);
+    mark.setAttribute('scale', this.markScale);
     mark.setAttribute('text', {
       value: label,
       color: this.theme.fontColor,
       align: this.data.axis === 'y' ? 'left' : 'center',
       anchor: this.data.axis === 'y' ? 'left' : 'center'
-    })
-    this.nextMark++
+    });
+    this.nextMark++;
   }
-})
+});
 
 },{}],7:[function(require,module,exports){
+'use strict';
+
 /* global AFRAME */
-const helpers = require('./plotutils')
+const helpers = require('./plotutils');
 
 AFRAME.registerComponent('guide-legend', {
   schema: {
-    aesthetic: {default: 'color', oneOf: ['shape', 'size', 'color']},
-    title: {default: []},
-    breaks: {default: []},
-    labels: {default: []}
+    aesthetic: { default: 'color', oneOf: ['shape', 'size', 'color'] },
+    title: { default: [] },
+    breaks: { default: [] },
+    labels: { default: [] }
   },
   dependencies: ['theme', 'geometry', 'material'],
   init: function () {
-    const theme = this.el.components.theme.getTheme()
-    this.nextMark = 0
-    this.numMarks = 0
-    this.markEls = []
-    this.labelEls = []
-    this.fontScale = {}
+    const theme = this.el.components.theme.getTheme();
+    this.nextMark = 0;
+    this.numMarks = 0;
+    this.markEls = [];
+    this.labelEls = [];
+    this.fontScale = {};
     // backdrop for hover highlight
     this.el.setAttribute('geometry', {
       primitive: 'plane',
       width: theme.guideWidth,
       height: theme.guideHeight
-    })
+    });
     this.el.setAttribute('material', {
       color: theme.highlightColor,
       visible: false
-    })
-    this.titleEl = document.createElement('a-entity')
-    this.el.appendChild(this.titleEl)
+    });
+    this.titleEl = document.createElement('a-entity');
+    this.el.appendChild(this.titleEl);
     this.titleEl.setAttribute('position', {
       x: 0,
       y: theme.guideHeight / 2 - theme.guideMargin,
       z: 0
-    })
-    this.titleEl.setAttribute('text', {align: 'center'})
-    this.markArea = document.createElement('a-entity')
-    this.el.appendChild(this.markArea)
-    this.labelArea = document.createElement('a-entity')
-    this.el.appendChild(this.labelArea)
+    });
+    this.titleEl.setAttribute('text', { align: 'center' });
+    this.markArea = document.createElement('a-entity');
+    this.el.appendChild(this.markArea);
+    this.labelArea = document.createElement('a-entity');
+    this.el.appendChild(this.labelArea);
   },
   update: function () {
-    this.nextMark = 0
-    this.numMarks = this.data.breaks.length
-    this.theme = this.el.components.theme.getTheme()
-    this.theme.titleSpace = 0.03 // todo work title size into theme
+    this.nextMark = 0;
+    this.numMarks = this.data.breaks.length;
+    this.theme = this.el.components.theme.getTheme();
+    this.theme.titleSpace = 0.03; // todo work title size into theme
     this.titleEl.setAttribute('text', {
       value: this.data.title[0] || '(' + this.data.aesthetic + ' not mapped)',
       color: this.theme.fontColor
-    })
-    this.fontScale.x = this.fontScale.y = this.fontScale.z = this.theme.fontScale
-    let size = this.theme.size
+    });
+    this.fontScale.x = this.fontScale.y = this.fontScale.z = this.theme.fontScale;
+    let size = this.theme.size;
     if (this.data.aesthetic === 'size') {
-      size = Math.max(...this.data.breaks) || size
+      size = Math.max(...this.data.breaks) || size;
     }
     this.markArea.setAttribute('position', {
       x: this.theme.guideWidth / 2 - this.theme.guideMargin - size,
       y: this.theme.guideHeight / 2 - this.theme.guideMargin - 0.03,
       z: this.theme.guideMargin
-    })
+    });
     this.labelArea.setAttribute('position', {
       x: this.theme.guideWidth / 2 - (this.theme.guideMargin + size) * 2,
       y: this.theme.guideHeight / 2 - this.theme.guideMargin,
       z: 0
-    })
+    });
   },
   tick: function () {
-    let markEl
-    let labelEl
-    const dataLen = this.numMarks
-    const i = this.nextMark
+    let markEl;
+    let labelEl;
+    const dataLen = this.numMarks;
+    const i = this.nextMark;
     // no more updates needed
-    if (i >= dataLen) { return }
+    if (i >= dataLen) {
+      return;
+    }
     // remove any extra entities first
     if (this.markEls.length > dataLen) {
-      this.markArea.removeChild(this.markEls[dataLen])
-      this.labelArea.removeChild(this.labelEls[dataLen])
-      this.markEls.splice(dataLen, 1)
-      this.labelEls.splice(dataLen, 1)
-      return
+      this.markArea.removeChild(this.markEls[dataLen]);
+      this.labelArea.removeChild(this.labelEls[dataLen]);
+      this.markEls.splice(dataLen, 1);
+      this.labelEls.splice(dataLen, 1);
+      return;
     }
     if (this.nextMark >= this.markEls.length) {
-      markEl = document.createElement('a-entity')
-      this.markEls.push(markEl)
-      this.markArea.appendChild(markEl)
-      labelEl = document.createElement('a-entity')
-      this.labelEls.push(labelEl)
-      this.labelArea.appendChild(labelEl)
+      markEl = document.createElement('a-entity');
+      this.markEls.push(markEl);
+      this.markArea.appendChild(markEl);
+      labelEl = document.createElement('a-entity');
+      this.labelEls.push(labelEl);
+      this.labelArea.appendChild(labelEl);
     } else {
-      markEl = this.markEls[i]
-      labelEl = this.labelEls[i]
+      markEl = this.markEls[i];
+      labelEl = this.labelEls[i];
     }
-    const aes = this.data.aesthetic
-    const theme = this.theme
-    const label = this.data.labels[i] || this.data.breaks[i]
+    const aes = this.data.aesthetic;
+    const theme = this.theme;
+    const label = this.data.labels[i] || this.data.breaks[i];
     const pos = {
       x: 0,
       y: -i * (theme.guideHeight - theme.titleSpace) / this.numMarks - theme.titleSpace,
       z: 0
-    }
-    const shape = aes === 'shape' ? this.data.breaks[i] : theme.shape
-    const size = aes === 'size' ? this.data.breaks[i] : theme.size
-    const color = aes === 'color' ? this.data.breaks[i] : theme.color
-    labelEl.setAttribute('scale', this.fontScale)
-    labelEl.setAttribute('position', pos)
+    };
+    const shape = aes === 'shape' ? this.data.breaks[i] : theme.shape;
+    const size = aes === 'size' ? this.data.breaks[i] : theme.size;
+    const color = aes === 'color' ? this.data.breaks[i] : theme.color;
+    labelEl.setAttribute('scale', this.fontScale);
+    labelEl.setAttribute('position', pos);
     labelEl.setAttribute('text', {
       value: label,
       anchor: 'right',
       align: 'right',
       baseline: 'top',
       color: theme.fontColor
-    })
-    pos.y += 0.01 // text and geometries don't align with equal y values
-    markEl.setAttribute('position', pos)
-    markEl.setAttribute('geometry', helpers.makeGeometry(shape, size))
-    markEl.setAttribute('material', helpers.makeMaterial(color))
-    this.nextMark++
+    });
+    pos.y += 0.01; // text and geometries don't align with equal y values
+    markEl.setAttribute('position', pos);
+    markEl.setAttribute('geometry', helpers.makeGeometry(shape, size));
+    markEl.setAttribute('material', helpers.makeMaterial(color));
+    this.nextMark++;
   }
-})
+});
 
 },{"./plotutils":10}],8:[function(require,module,exports){
+'use strict';
+
 /* global AFRAME */
-const helpers = require('./plotutils')
+const helpers = require('./plotutils');
 
 AFRAME.registerComponent('layer-point', {
   schema: {
-    x: {type: 'array'},
-    y: {type: 'array'},
-    z: {type: 'array'},
-    shape: {type: 'array'},
-    size: {type: 'array'},
-    color: {type: 'array'}
+    x: { type: 'array' },
+    y: { type: 'array' },
+    z: { type: 'array' },
+    shape: { type: 'array' },
+    size: { type: 'array' },
+    color: { type: 'array' }
   },
   dependencies: ['theme'],
   init: function () {
-    this.nextMark = 0
-    this.numMarks = 0
-    this.markEls = []
+    this.nextMark = 0;
+    this.numMarks = 0;
+    this.markEls = [];
     // offset to make default scale 0 - 1
-    this.el.setAttribute('position', {x: -0.5, y: -0.5, z: -0.5})
+    this.el.setAttribute('position', { x: -0.5, y: -0.5, z: -0.5 });
   },
   update: function () {
-    this.nextMark = 0
-    this.numMarks = this.data.x.length // maybe find shortest length?
-    this.theme = this.el.components.theme.getTheme()
+    this.nextMark = 0;
+    this.numMarks = this.data.x.length; // maybe find shortest length?
+    this.theme = this.el.components.theme.getTheme();
   },
   tick: function () {
-    let mark
-    const dataLen = this.numMarks
-    const i = this.nextMark
+    let mark;
+    const dataLen = this.numMarks;
+    const i = this.nextMark;
     // nothing to do
-    if (i >= dataLen) { return }
+    if (i >= dataLen) {
+      return;
+    }
     // remove any extra entities first
     if (this.markEls.length > dataLen) {
-      this.el.removeChild(this.markEls[dataLen])
-      this.markEls.splice(dataLen, 1)
-      return
+      this.el.removeChild(this.markEls[dataLen]);
+      this.markEls.splice(dataLen, 1);
+      return;
     }
     // create new entities as needed
     if (this.nextMark >= this.markEls.length) {
-      mark = document.createElement('a-entity')
-      this.markEls.push(mark)
-      this.el.appendChild(mark)
+      mark = document.createElement('a-entity');
+      this.markEls.push(mark);
+      this.el.appendChild(mark);
     } else {
-      mark = this.markEls[i]
+      mark = this.markEls[i];
     }
-    mark.setAttribute('geometry', helpers.makeGeometry(
-      this.data.shape[this.data.shape.length === 1 ? 0 : i] || this.theme.shape,
-      this.data.size[this.data.size.length === 1 ? 0 : i] || this.theme.size
-    ))
-    mark.setAttribute('material', helpers.makeMaterial(
-      this.data.color[this.data.color.length === 1 ? 0 : i] || this.theme.color
-    ))
+    mark.setAttribute('geometry', helpers.makeGeometry(this.data.shape[this.data.shape.length === 1 ? 0 : i] || this.theme.shape, this.data.size[this.data.size.length === 1 ? 0 : i] || this.theme.size));
+    mark.setAttribute('material', helpers.makeMaterial(this.data.color[this.data.color.length === 1 ? 0 : i] || this.theme.color));
     mark.setAttribute('animation', {
       startEvents: ['pointupdated'],
       property: 'position',
-      to: {x: this.data.x[i], y: this.data.y[i], z: this.data.z[i]}
-    })
+      to: { x: this.data.x[i], y: this.data.y[i], z: this.data.z[i] }
+    });
     if (mark.hasLoaded) {
-      mark.emit('pointupdated', undefined, false)
+      mark.emit('pointupdated', undefined, false);
     } else {
-      mark.addEventListener(
-        'loaded',
-        () => mark.emit('pointupdated', undefined, false),
-        {once: true}
-      )
+      mark.addEventListener('loaded', () => mark.emit('pointupdated', undefined, false), { once: true });
     }
-    this.nextMark++
+    this.nextMark++;
   }
-})
+});
 
 },{"./plotutils":10}],9:[function(require,module,exports){
+'use strict';
+
 /* global AFRAME */
 AFRAME.registerComponent('plot', {
   schema: {},
   dependencies: ['theme'],
   init: function () {
-    const legends = this.el.querySelectorAll('[guide-legend]')
+    const legends = this.el.querySelectorAll('[guide-legend]');
     for (let i = 0, theme; i < legends.length; i++) {
-      theme = legends[i].components.theme.getTheme()
+      theme = legends[i].components.theme.getTheme();
       legends[i].setAttribute('position', {
         x: -0.5 - theme.guideWidth / 2,
         y: 0.5 - i * 1 / legends.length - theme.guideHeight / 2,
         z: -0.5 - theme.guideWidth / 2
-      })
-      legends[i].setAttribute('rotation', 'y', -45)
+      });
+      legends[i].setAttribute('rotation', 'y', -45);
     }
   }
-})
+});
 
 },{}],10:[function(require,module,exports){
+'use strict';
+
 module.exports.makeGeometry = function (shape, size) {
-  const geometry = {primitive: shape}
+  const geometry = { primitive: shape };
   switch (shape) {
     case 'sphere':
     case 'tetrahedron':
     case 'octahedron':
     case 'dodecahedron':
-      geometry.radius = size
-      break
+      geometry.radius = size;
+      break;
     case 'box':
-      geometry.width = geometry.height = geometry.depth = size * 2
-      break
+      geometry.width = geometry.height = geometry.depth = size * 2;
+      break;
     case 'cone':
-      geometry.height = size * 2
-      geometry.radiusBottom = size
-      geometry.radiusTop = 0.001
-      break
+      geometry.height = size * 2;
+      geometry.radiusBottom = size;
+      geometry.radiusTop = 0.001;
+      break;
     case 'cylinder':
-      geometry.height = size * 2
-      geometry.radius = size
-      break
+      geometry.height = size * 2;
+      geometry.radius = size;
+      break;
     case 'torus':
-      geometry.radius = size * 0.75
-      geometry.radiusTubular = size * 0.15
-      break
+      geometry.radius = size * 0.75;
+      geometry.radiusTubular = size * 0.15;
+      break;
     case 'torusKnot':
-      geometry.radius = size * 0.6
-      geometry.radiusTubular = size * 0.1
+      geometry.radius = size * 0.6;
+      geometry.radiusTubular = size * 0.1;
   }
-  return geometry
-}
+  return geometry;
+};
 module.exports.makeMaterial = function (color) {
-  return {color: color}
-}
+  return { color: color };
+};
 
 },{}],11:[function(require,module,exports){
+'use strict';
+
 /* global AFRAME */
 AFRAME.registerComponent('theme', {
   schema: {
-    size: {default: 0.01},
-    shape: {default: 'sphere'},
-    color: {default: 'black'},
-    fontScale: {default: 0.75},
-    fontColor: {default: '#000'},
-    highlightColor: {default: '#FFF'},
-    highlightTexture: {default: ''},
-    guideWidth: {default: 0.3},
-    guideHeight: {default: 0.3},
-    guideMargin: {default: 0.01}
+    size: { default: 0.01 },
+    shape: { default: 'sphere' },
+    color: { default: 'black' },
+    fontScale: { default: 0.75 },
+    fontColor: { default: '#000' },
+    highlightColor: { default: '#FFF' },
+    highlightTexture: { default: '' },
+    guideWidth: { default: 0.3 },
+    guideHeight: { default: 0.3 },
+    guideMargin: { default: 0.01 }
   },
   getTheme: function () {
     // todo: merge with parent themes
-    return this.data
+    return this.data;
   }
-})
+});
 
 },{}]},{},[1]);
