@@ -1,5 +1,8 @@
 # gg-aframe
 
+[![npm Dowloads](https://img.shields.io/npm/dt/gg-aframe.svg?style=flat-square)](https://www.npmjs.com/package/gg-aframe)
+[![npm Version](http://img.shields.io/npm/v/gg-aframe.svg?style=flat-square)](https://www.npmjs.com/package/gg-aframe)
+
 A Grammar of Graphics for Virtual Reality Data Visualization using
 [A-Frame](https://aframe.io).
 
